@@ -12,6 +12,14 @@
         <priority>1.0</priority>
     </url>
     
+    <!-- Automati overview -->
+    <url>
+        <loc>https://automatifan.rs/automati.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
     <!-- About Page -->
     <url>
         <loc>https://automatifan.rs/o-nama.html</loc>
