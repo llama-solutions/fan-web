@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://automatifan.rs/sitemap.xml
+
+# Disallow backup folder
+Disallow: /backup/
+
+# Disallow common files
+Disallow: /*.json$
+Disallow: /*.md$
