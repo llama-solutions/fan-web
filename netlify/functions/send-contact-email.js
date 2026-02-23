@@ -15,19 +15,26 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const {
-    EMAILJS_SERVICE_ID,
-    EMAILJS_TEMPLATE_ID,
-    EMAILJS_PUBLIC_KEY,
-    EMAILJS_PRIVATE_KEY,
-  } = process.env;
+  const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
+  const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
+  const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
+  const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
 
-  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY || !EMAILJS_PRIVATE_KEY) {
-    console.error('Missing EmailJS env vars (need service, template, public key, and private key)');
+  const missing = [];
+  if (!EMAILJS_SERVICE_ID) missing.push('EMAILJS_SERVICE_ID');
+  if (!EMAILJS_TEMPLATE_ID) missing.push('EMAILJS_TEMPLATE_ID');
+  if (!EMAILJS_PUBLIC_KEY) missing.push('EMAILJS_PUBLIC_KEY');
+  if (!EMAILJS_PRIVATE_KEY) missing.push('EMAILJS_PRIVATE_KEY');
+
+  if (missing.length) {
+    console.error('Missing EmailJS env vars:', missing.join(', '));
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Server configuration error' }),
+      body: JSON.stringify({
+        error: 'Server configuration error',
+        missing: missing,
+      }),
     };
   }
 
