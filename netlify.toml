@@ -1,0 +1,11 @@
+# Netlify configuration for Automatifan site
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Redirects for SPA-style or clean URLs (optional)
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200

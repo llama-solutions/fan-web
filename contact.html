@@ -33,14 +33,6 @@
     
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
-    
-    <!-- EmailJS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            emailjs.init("bgEjHIZaOaUAfXj70");
-        })();
-    </script>
 </head>
 <body>
     <!-- Header -->
@@ -52,17 +44,10 @@
                 </a>
             </div>
             <nav class="main-navigation">
-                <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+                <button type="button" class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
                 <ul class="nav-menu">
                     <li><a href="index.html">Početna</a></li>
-                    <li class="has-submenu">
-                        <a href="automati.html">Automati</a>
-                        <ul class="submenu">
-                            <li><a href="tople-napitke.html">Automati za tople napitke</a></li>
-                            <li><a href="hladne-napitke.html">Automati za hladne napitke</a></li>
-                            <li><a href="kancelarije.html">Automati za kancelarije</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="automati.html">Automati</a></li>
                     <li><a href="o-nama.html">O nama</a></li>
                     <li><a href="contact.html">Kontakt</a></li>
                 </ul>
@@ -150,7 +135,7 @@
     <!-- JavaScript -->
     <script src="js/main.js"></script>
     <script>
-        // Contact Form Handler
+        // Contact Form Handler – sends via Netlify function (API key stays on server)
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('contact-form');
             const submitBtn = document.getElementById('submit-btn');
@@ -160,42 +145,54 @@
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
-                    // Disable submit button
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Šalje se...';
                     messageDiv.style.display = 'none';
                     
-                    // Send email using EmailJS
-                    emailjs.sendForm('service_gfig5cu', 'template_836ycwc', this)
-                        .then(function() {
-                            // Success
-                            messageDiv.style.display = 'block';
+                    const payload = {
+                        name: form.name.value.trim(),
+                        email: form.email.value.trim(),
+                        phone: (form.phone && form.phone.value) ? form.phone.value.trim() : '',
+                        message: form.message.value.trim()
+                    };
+                    
+                    fetch('/.netlify/functions/send-contact-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(function(res) {
+                        return res.text().then(function(text) {
+                            var data = {};
+                            try { data = JSON.parse(text); } catch (e) {}
+                            return { ok: res.ok, data: data };
+                        });
+                    })
+                    .then(function(result) {
+                        messageDiv.style.display = 'block';
+                        if (result.ok && result.data.success) {
                             messageDiv.style.backgroundColor = '#4caf50';
                             messageDiv.style.color = '#ffffff';
                             messageDiv.textContent = 'Poruka je uspešno poslata! Hvala vam, odgovorićemo uskoro.';
                             form.reset();
-                            
-                            // Re-enable button
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Pošalji poruku';
-                            
-                            // Hide message after 5 seconds
-                            setTimeout(function() {
-                                messageDiv.style.display = 'none';
-                            }, 5000);
-                        }, function(error) {
-                            // Error
-                            messageDiv.style.display = 'block';
+                            setTimeout(function() { messageDiv.style.display = 'none'; }, 5000);
+                        } else {
                             messageDiv.style.backgroundColor = '#f44336';
                             messageDiv.style.color = '#ffffff';
                             messageDiv.textContent = 'Greška pri slanju poruke. Molimo pokušajte ponovo ili nas kontaktirajte direktno.';
-                            
-                            // Re-enable button
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Pošalji poruku';
-                            
-                            console.error('EmailJS Error:', error);
-                        });
+                        }
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Pošalji poruku';
+                    })
+                    .catch(function(err) {
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.backgroundColor = '#f44336';
+                        messageDiv.style.color = '#ffffff';
+                        messageDiv.textContent = 'Greška pri slanju poruke. Molimo pokušajte ponovo ili nas kontaktirajte direktno.';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Pošalji poruku';
+                        console.error('Contact form error:', err);
+                    });
                 });
             }
         });

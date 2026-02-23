@@ -44,17 +44,10 @@
                 </a>
             </div>
             <nav class="main-navigation">
-                <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+                <button type="button" class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
                 <ul class="nav-menu">
                     <li><a href="index.html">Početna</a></li>
-                    <li class="has-submenu">
-                        <a href="automati.html">Automati</a>
-                        <ul class="submenu">
-                            <li><a href="tople-napitke.html">Automati za tople napitke</a></li>
-                            <li><a href="hladne-napitke.html">Automati za hladne napitke</a></li>
-                            <li><a href="kancelarije.html">Automati za kancelarije</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="automati.html">Automati</a></li>
                     <li><a href="o-nama.html">O nama</a></li>
                     <li><a href="contact.html">Kontakt</a></li>
                 </ul>
@@ -76,6 +69,7 @@
     <section class="content-section" style="background: linear-gradient(180deg, #ffffff 0%, rgba(181,113,30,0.19) 100%); padding: 100px 0;">
         <div class="container" style="max-width: 888px;">
             <div style="text-align: center; margin-bottom: 3rem;">
+                <p style="margin-bottom: 1rem;"><a href="automati.html#tople-napitke" style="color: #a67c52; text-decoration: none; font-size: 14px;">← Pregled automata</a></p>
                 <img src="images/automati-fan-kafa.png" alt="Automati FAN" style="width: 20%; max-width: 150px; margin-bottom: 1rem;">
                 <h2 style="color: #c69c6d; font-size: 1.4em; margin-bottom: 1rem;">Naša ponuda</h2>
                 <p style="font-family: 'Montserrat', sans-serif; color: #7c7c7c;">Izaberite automate za kafu i tople napitke koji najbolje odgovaraju vašim potrebama</p>
@@ -84,7 +78,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 100px;">
                 
                 <!-- Product Card 1 -->
-                <div class="product-card" style="border: 1px solid #eeeeee; border-radius: 30px; padding: 30px; transition: box-shadow 0.3s;">
+                <div class="product-feature-card">
                     <div style="text-align: center; margin-bottom: 1.5rem;">
                         <img src="images/automat-za-kafu-canto.png" alt="Necta Canto" style="max-width: 80%; height: auto;">
                     </div>
@@ -101,7 +95,7 @@
                 </div>
 
                 <!-- Product Card 2 -->
-                <div class="product-card" style="border: 1px solid #eeeeee; border-radius: 30px; padding: 30px; transition: box-shadow 0.3s;">
+                <div class="product-feature-card">
                     <div style="text-align: center; margin-bottom: 1.5rem;">
                         <img src="images/samousluzni-aparat-za-kafu-solista.png" alt="Necta Solista" style="max-width: 80%; height: auto;">
                     </div>
@@ -118,7 +112,7 @@
                 </div>
 
                 <!-- Product Card 3 -->
-                <div class="product-card" style="border: 1px solid #eeeeee; border-radius: 30px; padding: 30px; transition: box-shadow 0.3s;">
+                <div class="product-feature-card">
                     <div style="text-align: center; margin-bottom: 1.5rem;">
                         <img src="images/samousluzni-aparat-za-kafu-diamante.png" alt="Necta Diamante" style="max-width: 80%; height: auto;">
                     </div>
