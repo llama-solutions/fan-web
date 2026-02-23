@@ -19,10 +19,11 @@ exports.handler = async (event, context) => {
     EMAILJS_SERVICE_ID,
     EMAILJS_TEMPLATE_ID,
     EMAILJS_PUBLIC_KEY,
+    EMAILJS_PRIVATE_KEY,
   } = process.env;
 
-  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-    console.error('Missing EmailJS env vars');
+  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY || !EMAILJS_PRIVATE_KEY) {
+    console.error('Missing EmailJS env vars (need service, template, public key, and private key)');
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -54,6 +55,7 @@ exports.handler = async (event, context) => {
     service_id: EMAILJS_SERVICE_ID,
     template_id: EMAILJS_TEMPLATE_ID,
     user_id: EMAILJS_PUBLIC_KEY,
+    accessToken: EMAILJS_PRIVATE_KEY,
     template_params: {
       from_name: name,
       from_email: email,
