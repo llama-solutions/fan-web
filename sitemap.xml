@@ -60,4 +60,12 @@
         <priority>0.7</priority>
     </url>
     
+    <!-- Products -->
+    <url>
+        <loc>https://automatifan.rs/products.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
 </urlset>

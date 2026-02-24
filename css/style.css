@@ -156,7 +156,7 @@ a:focus {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .header-container {
@@ -668,16 +668,23 @@ a:focus {
   
   .nav-menu {
     display: none;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    min-height: 100vh;
+    padding-top: 3.5rem;
+    padding-bottom: 2rem;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
     background-color: var(--color-white);
     flex-direction: column;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 999;
     gap: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .nav-menu.active {
@@ -695,7 +702,8 @@ a:focus {
   
   .nav-menu a {
     display: block;
-    padding: 0.75rem 1rem;
+    padding: 0.9rem 1rem;
+    font-size: 1.05rem;
   }
   
   .nav-menu .submenu {
