@@ -4,8 +4,21 @@
   publish = "."
   functions = "netlify/functions"
 
-# Redirects for SPA-style or clean URLs (optional)
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200
+# Prefer https + non-www (fixes Soft 404 when Google crawls www or http)
+[[redirects]]
+  from = "http://www.automatifan.rs/*"
+  to = "https://automatifan.rs/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.automatifan.rs/*"
+  to = "https://automatifan.rs/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://automatifan.rs/*"
+  to = "https://automatifan.rs/:splat"
+  status = 301
+  force = true
