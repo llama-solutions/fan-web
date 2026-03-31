@@ -1,6 +1,9 @@
 # Ignore backup folder and all its contents
 backup/
 
+# Local Python venv (favicon build script)
+.venv/
+
 # OS files
 .DS_Store
 .DS_Store?
