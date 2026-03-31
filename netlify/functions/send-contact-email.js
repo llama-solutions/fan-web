@@ -50,11 +50,39 @@ exports.handler = async (event, context) => {
   }
 
   const { name, email, phone, message } = body;
-  if (!name || !email || !message) {
+  if (!name || !email || !message || phone == null || String(phone).trim() === '') {
     return {
       statusCode: 400,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Name, email and message are required' }),
+      body: JSON.stringify({ error: 'Name, email, phone and message are required' }),
+    };
+  }
+
+  const nameStr = String(name).trim();
+  const letterCount = (nameStr.match(/\p{L}/gu) || []).length;
+  if (letterCount < 3) {
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Invalid name' }),
+    };
+  }
+
+  const emailStr = String(email).trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) {
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Invalid email' }),
+    };
+  }
+
+  const digits = String(phone).replace(/\D/g, '');
+  if (!/^06\d{7}$/.test(digits) && !/^06\d{8}$/.test(digits)) {
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Invalid phone' }),
     };
   }
 
@@ -64,13 +92,13 @@ exports.handler = async (event, context) => {
     user_id: EMAILJS_PUBLIC_KEY,
     accessToken: EMAILJS_PRIVATE_KEY,
     template_params: {
-      from_name: name,
-      from_email: email,
-      reply_to: email,
-      message: message,
-      phone: phone || '',
-      name,
-      email,
+      from_name: nameStr,
+      from_email: emailStr,
+      reply_to: emailStr,
+      message: String(message).trim(),
+      phone: String(phone).trim(),
+      name: nameStr,
+      email: emailStr,
     },
   };
 

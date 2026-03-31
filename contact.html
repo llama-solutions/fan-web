@@ -115,8 +115,8 @@
                         <input type="email" id="email" name="email" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 3px; font-family: var(--font-primary); font-size: var(--font-size-base);">
                     </div>
                     <div style="margin-bottom: 1.5rem;">
-                        <label for="phone" style="display: block; margin-bottom: 0.5rem; color: var(--color-text-primary); font-weight: 500;">Telefon</label>
-                        <input type="tel" id="phone" name="phone" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 3px; font-family: var(--font-primary); font-size: var(--font-size-base);">
+                        <label for="phone" style="display: block; margin-bottom: 0.5rem; color: var(--color-text-primary); font-weight: 500;">Mobilni telefon *</label>
+                        <input type="tel" id="phone" name="phone" required inputmode="numeric" autocomplete="tel" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 3px; font-family: var(--font-primary); font-size: var(--font-size-base);">
                     </div>
                     <div style="margin-bottom: 1.5rem;">
                         <label for="message" style="display: block; margin-bottom: 0.5rem; color: var(--color-text-primary); font-weight: 500;">Poruka *</label>
@@ -143,23 +143,92 @@
     <script>
         // Contact Form Handler – sends via Netlify function (API key stays on server)
         document.addEventListener('DOMContentLoaded', function() {
+            var CONTACT_LAST_SUBMIT_KEY = 'contactFormLastSubmitTs';
+            var RATE_LIMIT_MS = 60 * 1000;
+
+            function countLetters(str) {
+                var m = str.match(/\p{L}/gu);
+                return m ? m.length : 0;
+            }
+
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+            }
+
+            /** Serbian mobile: starts with 06, 9 or 10 digits total (spaces ignored). */
+            function isValidMobilePhone(raw) {
+                var d = String(raw).replace(/\D/g, '');
+                return /^06\d{7}$/.test(d) || /^06\d{8}$/.test(d);
+            }
+
             const form = document.getElementById('contact-form');
             const submitBtn = document.getElementById('submit-btn');
             const messageDiv = document.getElementById('form-message');
+
+            function resetSubmitButton() {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Pošalji poruku';
+            }
             
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
+                    messageDiv.style.display = 'none';
+                    messageDiv.style.border = '';
+                    messageDiv.style.borderLeft = '';
+                    messageDiv.style.boxShadow = '';
+
+                    var nameVal = form.name.value.trim();
+                    var emailVal = form.email.value.trim();
+                    var phoneVal = form.phone && form.phone.value ? form.phone.value.trim() : '';
+                    var messageVal = form.message.value.trim();
+
+                    if (countLetters(nameVal) < 3) {
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.backgroundColor = '#f44336';
+                        messageDiv.style.color = '#ffffff';
+                        messageDiv.style.border = 'none';
+                        messageDiv.textContent = 'Ime i prezime moraju sadržati najmanje tri slova.';
+                        return;
+                    }
+                    if (!isValidEmail(emailVal)) {
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.backgroundColor = '#f44336';
+                        messageDiv.style.color = '#ffffff';
+                        messageDiv.style.border = 'none';
+                        messageDiv.textContent = 'Unesite ispravnu email adresu (npr. ime@domen.com).';
+                        return;
+                    }
+                    if (!isValidMobilePhone(phoneVal)) {
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.backgroundColor = '#f44336';
+                        messageDiv.style.color = '#ffffff';
+                        messageDiv.style.border = 'none';
+                        messageDiv.textContent = 'Mobilni telefon mora počinjati sa 06 i imati 9 ili 10 cifara (npr. 0601234567).';
+                        return;
+                    }
+
+                    var lastTs = parseInt(localStorage.getItem(CONTACT_LAST_SUBMIT_KEY), 10);
+                    if (lastTs && !isNaN(lastTs) && (Date.now() - lastTs < RATE_LIMIT_MS)) {
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.backgroundColor = 'rgba(198, 156, 109, 0.14)';
+                        messageDiv.style.color = 'var(--color-text-primary)';
+                        messageDiv.style.border = '1px solid rgba(198, 156, 109, 0.45)';
+                        messageDiv.style.borderLeft = '4px solid var(--color-primary)';
+                        messageDiv.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.04)';
+                        messageDiv.textContent = 'Već ste poslali upit. Odgovorićemo vam u najkraćem roku. Ako želite da nas kontaktirate ponovo, slobodno nas pozovite telefonom.';
+                        return;
+                    }
+                    
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Šalje se...';
-                    messageDiv.style.display = 'none';
                     
                     const payload = {
-                        name: form.name.value.trim(),
-                        email: form.email.value.trim(),
-                        phone: (form.phone && form.phone.value) ? form.phone.value.trim() : '',
-                        message: form.message.value.trim()
+                        name: nameVal,
+                        email: emailVal,
+                        phone: phoneVal,
+                        message: messageVal
                     };
                     
                     fetch('/.netlify/functions/send-contact-email', {
@@ -177,26 +246,30 @@
                     .then(function(result) {
                         messageDiv.style.display = 'block';
                         if (result.ok && result.data.success) {
+                            try {
+                                localStorage.setItem(CONTACT_LAST_SUBMIT_KEY, String(Date.now()));
+                            } catch (ignore) {}
                             messageDiv.style.backgroundColor = '#4caf50';
                             messageDiv.style.color = '#ffffff';
+                            messageDiv.style.border = 'none';
                             messageDiv.textContent = 'Poruka je uspešno poslata! Hvala vam, odgovorićemo uskoro.';
                             form.reset();
                             setTimeout(function() { messageDiv.style.display = 'none'; }, 5000);
                         } else {
                             messageDiv.style.backgroundColor = '#f44336';
                             messageDiv.style.color = '#ffffff';
+                            messageDiv.style.border = 'none';
                             messageDiv.textContent = 'Greška pri slanju poruke. Molimo pokušajte ponovo ili nas kontaktirajte direktno.';
                         }
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Pošalji poruku';
+                        resetSubmitButton();
                     })
                     .catch(function(err) {
                         messageDiv.style.display = 'block';
                         messageDiv.style.backgroundColor = '#f44336';
                         messageDiv.style.color = '#ffffff';
+                        messageDiv.style.border = 'none';
                         messageDiv.textContent = 'Greška pri slanju poruke. Molimo pokušajte ponovo ili nas kontaktirajte direktno.';
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Pošalji poruku';
+                        resetSubmitButton();
                         console.error('Contact form error:', err);
                     });
                 });
