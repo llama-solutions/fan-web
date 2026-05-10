@@ -7,7 +7,7 @@ Native web application converted from WordPress site. This is a static HTML/CSS 
 ```
 fan-web/
 ├── index.html          # Homepage
-├── products.html       # Products page
+├── automati.html       # Machines overview → category pages
 ├── contact.html        # Contact page
 ├── css/
 │   └── style.css      # Main stylesheet with design system
@@ -103,11 +103,8 @@ If you're using VS Code:
    - Products preview
    - Call-to-action section
 
-2. **Products (products.html)**
-   - Hero section
-   - Product grid with cards
-   - Features section
-   - CTA section
+2. **Automati (automati.html)**
+   - Overview linking to categories (topli / hladni / kancelarija)
 
 3. **Contact (contact.html)**
    - Hero section
